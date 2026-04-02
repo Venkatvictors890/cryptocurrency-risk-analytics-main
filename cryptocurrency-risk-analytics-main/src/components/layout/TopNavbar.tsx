@@ -1,19 +1,38 @@
-import { Search, Activity, Wifi } from "lucide-react";
+import { Search, Activity, Wifi, LogOut } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { SidebarTrigger } from "@/components/ui/sidebar";
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { ThemeToggle } from "@/components/ThemeToggle";
+import { ExitConfirmationDialog } from "@/components/ExitConfirmationDialog";
+import { Button } from "@/components/ui/button";
 
 export function TopNavbar() {
   const [searchQuery, setSearchQuery] = useState("");
   const navigate = useNavigate();
+  
+  // Implementation states for Exit Dialog
+  const [isExitDialogOpen, setIsExitDialogOpen] = useState(false);
+  const [hasUnsavedChanges, setHasUnsavedChanges] = useState(true); // Defaulting to true to show the unsaved flow
 
   const handleSearch = (e: React.FormEvent) => {
     e.preventDefault();
     if (searchQuery.trim()) {
       navigate(`/markets?q=${encodeURIComponent(searchQuery.trim())}`);
     }
+  };
+
+  const handleSaveData = async () => {
+    // Simulate a network save request
+    await new Promise(resolve => setTimeout(resolve, 1000));
+    setHasUnsavedChanges(false);
+    return true; 
+  };
+
+  const handleConfirmExit = () => {
+    setIsExitDialogOpen(false);
+    // Usually you would clear tokens, redirect to /login or a landing page
+    navigate("/");
   };
 
   return (
@@ -51,6 +70,24 @@ export function TopNavbar() {
           <Wifi className="h-3 w-3 text-primary animate-pulse-gentle" />
           <span className="text-[11px] font-medium text-primary/80">Live</span>
         </div>
+        <Button 
+          variant="ghost" 
+          size="icon" 
+          onClick={() => setIsExitDialogOpen(true)}
+          title="Exit Application"
+          className="text-muted-foreground hover:text-destructive transition-colors h-8 w-8"
+        >
+          <LogOut className="h-4 w-4" />
+        </Button>
+
+        {/* Exit Confirmation Dialog Instance */}
+        <ExitConfirmationDialog
+          isOpen={isExitDialogOpen}
+          hasUnsavedChanges={hasUnsavedChanges}
+          onOpenChange={setIsExitDialogOpen}
+          onSave={handleSaveData}
+          onConfirmClose={handleConfirmExit}
+        />
       </div>
     </header>
   );
