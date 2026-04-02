@@ -1,0 +1,161 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* =========================
+   THEME VARIABLES
+========================= */
+
+@layer base {
+  :root, .light {
+    --background: 220 20% 97%;
+    --foreground: 224 20% 14%;
+
+    --card: 0 0% 100%;
+    --card-foreground: 224 20% 14%;
+
+    --border: 220 14% 88%;
+    --muted-foreground: 220 10% 46%;
+
+    --primary: 162 72% 40%;
+    --glow-primary: 162 72% 40%;
+    --glow-blue: 199 89% 48%;
+
+    /* Chart */
+    --chart-grid: 220 10% 78%;
+    --chart-tick: 220 10% 52%;
+
+    /* Tooltip */
+    --tooltip-bg: rgba(255,255,255,0.95);
+    --tooltip-border: rgba(0,0,0,0.08);
+    --tooltip-text: #111;
+  }
+
+  .dark {
+    --background: 228 18% 6%;
+    --foreground: 220 20% 92%;
+
+    --card: 228 16% 9%;
+
+    --border: 228 14% 14%;
+    --muted-foreground: 220 10% 46%;
+
+    --primary: 162 78% 46%;
+    --glow-primary: 162 78% 46%;
+    --glow-blue: 199 89% 48%;
+
+    /* Chart */
+    --chart-grid: 228 14% 22%;
+    --chart-tick: 220 10% 46%;
+
+    /* Tooltip */
+    --tooltip-bg: rgba(20,20,20,0.85);
+    --tooltip-border: rgba(255,255,255,0.08);
+    --tooltip-text: #eee;
+  }
+}
+
+/* =========================
+   BASE STYLES
+========================= */
+
+@layer base {
+  * {
+    @apply border-border;
+    transition: background-color 0.25s ease, color 0.25s ease;
+  }
+
+  body {
+    @apply bg-background text-foreground font-sans antialiased;
+  }
+}
+
+/* =========================
+   GLASS UI
+========================= */
+
+@layer utilities {
+  .glass-card {
+    background: hsl(var(--card) / 0.85);
+    border: 1px solid hsl(var(--border) / 0.5);
+    backdrop-filter: blur(12px);
+    border-radius: 12px;
+    transition: all 0.25s ease;
+  }
+
+  .glass-card:hover {
+    transform: scale(1.02);
+    box-shadow: 0 8px 30px -8px hsl(var(--foreground) / 0.15);
+  }
+
+  .glow {
+    box-shadow: 0 0 20px -6px hsl(var(--glow-primary) / 0.4);
+  }
+}
+
+/* =========================
+   RECHARTS FIX (IMPORTANT)
+========================= */
+
+/* remove default ugly gray */
+.recharts-tooltip-wrapper {
+  outline: none !important;
+}
+
+/* custom tooltip */
+.recharts-default-tooltip {
+  background: var(--tooltip-bg) !important;
+  border: 1px solid var(--tooltip-border) !important;
+  border-radius: 10px !important;
+  padding: 8px 12px !important;
+  backdrop-filter: blur(10px);
+  box-shadow: 0 8px 24px rgba(0,0,0,0.15);
+  transition: all 0.2s ease;
+}
+
+/* text */
+.recharts-tooltip-label {
+  color: var(--tooltip-text) !important;
+  font-weight: 500;
+}
+
+.recharts-tooltip-item {
+  color: var(--tooltip-text) !important;
+  opacity: 0.8;
+}
+
+/* remove gray hover overlay */
+.recharts-tooltip-cursor {
+  fill: transparent !important;
+}
+
+/* =========================
+   SCROLLBAR
+========================= */
+
+::-webkit-scrollbar {
+  width: 6px;
+}
+
+::-webkit-scrollbar-thumb {
+  background: hsl(var(--border));
+  border-radius: 4px;
+}
+
+/* =========================
+   SMOOTH UI
+========================= */
+
+button {
+  transition: all 0.2s ease;
+}
+
+button:hover {
+  transform: scale(1.05);
+}
+
+button:active {
+  transform: scale(0.95);
+}
