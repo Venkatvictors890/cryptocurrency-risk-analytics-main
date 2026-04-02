@@ -1,6 +1,9 @@
 import { useParams, useNavigate } from "react-router-dom";
 import { useCryptoData } from "@/hooks/useCryptoData";
-import { ArrowLeft, TrendingUp, TrendingDown, AlertTriangle, Activity, Globe, Info } from "lucide-react";
+import { useCoinChart } from "@/hooks/useCoinDetail";
+import { useCurrency } from "@/hooks/useCurrencyStore";
+import { SUPPORTED_CURRENCIES } from "@/services/coingecko";
+import { ArrowLeft, TrendingUp, TrendingDown, Activity, Globe, Info, RefreshCw } from "lucide-react";
 import { formatPrice, formatPercent, formatCompact } from "@/lib/format";
 import { Skeleton } from "@/components/ui/skeleton";
 import { PriceChart } from "@/components/coin/PriceChart";
@@ -9,28 +12,28 @@ import { SentimentTrendChart } from "@/components/coin/SentimentTrendChart";
 import { RiskBreakdownPanel } from "@/components/coin/RiskBreakdownPanel";
 import { InsightsPanel } from "@/components/coin/InsightsPanel";
 import { SentimentFeed } from "@/components/coin/SentimentFeed";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 import {
   Tooltip,
   TooltipContent,
   TooltipProvider,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
-import axios from "axios";
 
 type Interval = "1m" | "5m" | "1H" | "1D" | "1W" | "1M";
 
-const CURRENCIES = [
-  { code: "USD", symbol: "$", rate: 1 },
-  { code: "EUR", symbol: "€", rate: 0.92 },
-  { code: "GBP", symbol: "£", rate: 0.79 },
-  { code: "INR", symbol: "₹", rate: 83.5 },
-  { code: "JPY", symbol: "¥", rate: 149.8 },
-];
+const INTERVAL_TO_DAYS: Record<Interval, number | string> = {
+  "1m": 1,
+  "5m": 1,
+  "1H": 1,
+  "1D": 7,
+  "1W": 30,
+  "1M": 90,
+};
 
 const STAT_EXPLANATIONS: Record<string, string> = {
-  "Market Cap": "Total value of all coins in circulation (price × supply).",
-  "24h Volume": "Total trading volume in the last 24 hours across all exchanges.",
+  "Market Cap": "Total value of all coins in circulation (price × supply). Larger market cap = more established.",
+  "24h Volume": "Total trading volume in the last 24 hours across all exchanges. High volume = active market.",
   "24h High": "Highest price reached in the last 24 hours.",
   "24h Low": "Lowest price reached in the last 24 hours.",
 };
@@ -38,42 +41,32 @@ const STAT_EXPLANATIONS: Record<string, string> = {
 export default function CoinDetail() {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
-  const [liveCoin,setLiveCoin] = useState<any>(null);
-  const { data: cryptos, isLoading, dataUpdatedAt } = useCryptoData(20);
+  const { currency: globalCurrency, setCurrencyByCode } = useCurrency();
+  const { data: cryptos, isLoading, dataUpdatedAt } = useCryptoData(50, globalCurrency.code);
   const [interval, setInterval] = useState<Interval>("1D");
-  const [currency, setCurrency] = useState(CURRENCIES[0]);
   const [lastUpdated, setLastUpdated] = useState<string>("");
+  const [secondsAgo, setSecondsAgo] = useState(0);
 
-  const coin = liveCoin || cryptos?.find((c) => c.id === id);
-  
- useEffect(() => {
-  if (!id) return;
-  let intervalID:number;
-  const fetchLive = async () => {
-    try {
-      const res = await axios.get(
-        "https://api.coingecko.com/api/v3/coins/markets",
-        {
-          params: {
-            vs_currency: currency.code.toLowerCase(),
-            ids: id,
-          },
-        }
-      );
+  // Fetch real chart data
+  const days = INTERVAL_TO_DAYS[interval];
+  const { data: chartData } = useCoinChart(id, globalCurrency.code, days);
 
-      setLiveCoin(res.data[0]);
-      setLastUpdated(new Date().toLocaleTimeString());
-    } catch (err) {
-      console.error("Live fetch error:", err);
+  const coin = cryptos?.find((c) => c.id === id);
+
+  useEffect(() => {
+    if (dataUpdatedAt) {
+      setLastUpdated(new Date(dataUpdatedAt).toLocaleTimeString());
+      setSecondsAgo(0);
     }
-  };
-  fetchLive();
-  intervalID = window.setInterval(() => {
-    fetchLive();
-  },5000);
-  return () => window.clearInterval(intervalID);
-    
-  }, [id, currency]);
+  }, [dataUpdatedAt]);
+
+  // Countdown timer
+  useEffect(() => {
+    const timer = window.setInterval(() => {
+      setSecondsAgo((s) => s + 1);
+    }, 1000);
+    return () => clearInterval(timer);
+  }, []);
 
   if (isLoading) {
     return (
@@ -97,11 +90,9 @@ export default function CoinDetail() {
     );
   }
 
-  const change = coin.price_change_percentage_24h ?? coin.priceChangePercentage24h;
-  const isUp = change >=0;
+  const isUp = coin.priceChangePercentage24h >= 0;
   const intervals: Interval[] = ["1m", "5m", "1H", "1D", "1W", "1M"];
-  const basePrice = coin.current_price ?? coin.currentPrice;
-  const convertedPrice = basePrice * currency.rate;
+
   return (
     <div className="p-4 md:p-6 space-y-6 max-w-[1400px] mx-auto">
       {/* Header */}
@@ -111,17 +102,22 @@ export default function CoinDetail() {
             className="flex items-center gap-2 text-xs text-muted-foreground hover:text-foreground transition-colors active:scale-95">
             <ArrowLeft className="h-3.5 w-3.5" /> Back
           </button>
-          <div className="flex items-center gap-2">
-            {lastUpdated && (
-              <span className="text-[10px] text-muted-foreground">Updated: {lastUpdated}</span>
-            )}
+          <div className="flex items-center gap-3">
+            {/* Live indicator */}
+            <div className="flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-primary/5 border border-primary/10">
+              <RefreshCw className="h-3 w-3 text-primary animate-spin" style={{ animationDuration: "3s" }} />
+              <span className="text-[10px] text-primary font-medium">
+                {secondsAgo < 5 ? "Just updated" : `${secondsAgo}s ago`}
+              </span>
+            </div>
+            {/* Currency selector - 20 currencies */}
             <select
-              value={currency.code}
-              onChange={(e) => setCurrency(CURRENCIES.find(c => c.code === e.target.value) || CURRENCIES[0])}
+              value={globalCurrency.code}
+              onChange={(e) => setCurrencyByCode(e.target.value)}
               className="h-8 rounded-lg bg-secondary/50 border border-border px-2 text-xs text-foreground focus:outline-none focus:ring-1 focus:ring-primary"
             >
-              {CURRENCIES.map(c => (
-                <option key={c.code} value={c.code}>{c.symbol} {c.code}</option>
+              {SUPPORTED_CURRENCIES.map(c => (
+                <option key={c.code} value={c.code}>{c.symbol} {c.code.toUpperCase()}</option>
               ))}
             </select>
           </div>
@@ -138,7 +134,7 @@ export default function CoinDetail() {
               </h1>
               <div className="flex items-center gap-3 mt-1">
                 <span className="text-2xl font-bold font-mono tabular-nums">
-                  {currency.symbol}{convertedPrice.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: convertedPrice > 1 ? 2 : 6 })}
+                  {globalCurrency.symbol}{coin.currentPrice.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: coin.currentPrice > 1 ? 2 : 6 })}
                 </span>
                 <span className={`flex items-center gap-1 text-sm font-mono ${isUp ? "text-sentiment-positive" : "text-sentiment-negative"}`}>
                   {isUp ? <TrendingUp className="h-4 w-4" /> : <TrendingDown className="h-4 w-4" />}
@@ -154,12 +150,12 @@ export default function CoinDetail() {
       <TooltipProvider delayDuration={200}>
         <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 opacity-0 animate-fade-up" style={{ animationDelay: "60ms" }}>
           {[
-            { label: "Market Cap", value: formatCompact(coin.marketCap * currency.rate), icon: Globe },
-            { label: "24h Volume", value: formatCompact(coin.totalVolume * currency.rate), icon: Activity },
-            { label: "24h High", value: `${currency.symbol}${(coin.high24h * currency.rate).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`, icon: TrendingUp },
-            { label: "24h Low", value: `${currency.symbol}${(coin.low24h * currency.rate).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`, icon: TrendingDown },
+            { label: "Market Cap", value: formatCompact(coin.marketCap), icon: Globe },
+            { label: "24h Volume", value: formatCompact(coin.totalVolume), icon: Activity },
+            { label: "24h High", value: `${globalCurrency.symbol}${coin.high24h.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`, icon: TrendingUp },
+            { label: "24h Low", value: `${globalCurrency.symbol}${coin.low24h.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`, icon: TrendingDown },
           ].map((s) => (
-            <div key={s.label} className="glass-card rounded-xl p-4">
+            <div key={s.label} className="glass-card rounded-xl p-4 interactive-card">
               <div className="flex items-center gap-1.5 mb-1">
                 <s.icon className="h-3 w-3 text-muted-foreground" />
                 <p className="text-[10px] text-muted-foreground">{s.label}</p>
@@ -190,9 +186,15 @@ export default function CoinDetail() {
         ))}
       </div>
 
-      {/* Main chart */}
+      {/* Main chart - with real data */}
       <div className="opacity-0 animate-fade-up" style={{ animationDelay: "140ms" }}>
-        <PriceChart coin={coin} interval={interval} currency={currency.code} exchangeRate={currency.rate} />
+        <PriceChart
+          coin={coin}
+          interval={interval}
+          currency={globalCurrency.code.toUpperCase()}
+          exchangeRate={1}
+          chartData={chartData?.prices}
+        />
       </div>
 
       {/* Volume + Sentiment charts */}

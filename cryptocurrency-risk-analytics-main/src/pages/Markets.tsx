@@ -1,15 +1,23 @@
 import { useState, useMemo } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import { useCryptoData } from "@/hooks/useCryptoData";
+import { useCurrency } from "@/hooks/useCurrencyStore";
 import { formatPrice, formatPercent, formatCompact } from "@/lib/format";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Input } from "@/components/ui/input";
-import { Search, Filter } from "lucide-react";
+import { Search, Filter, Info } from "lucide-react";
 import { LineChart, Line, ResponsiveContainer } from "recharts";
 import type { CryptoAsset, RiskLevel } from "@/types/crypto";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
 
 export default function Markets() {
-  const { data: cryptos, isLoading } = useCryptoData(20);
+  const { currency } = useCurrency();
+  const { data: cryptos, isLoading } = useCryptoData(50, currency.code);
   const [searchParams] = useSearchParams();
   const navigate = useNavigate();
 
@@ -52,7 +60,7 @@ export default function Markets() {
       <div className="flex flex-col sm:flex-row gap-4 items-start sm:items-center justify-between opacity-0 animate-fade-up">
         <div>
           <h1 className="text-xl font-bold">Markets</h1>
-          <p className="text-xs text-muted-foreground">{filtered.length} assets</p>
+          <p className="text-xs text-muted-foreground">{filtered.length} assets • {currency.symbol} {currency.code.toUpperCase()}</p>
         </div>
         <div className="flex gap-3 flex-wrap">
           <div className="relative">
@@ -64,7 +72,7 @@ export default function Markets() {
             <Filter className="h-3.5 w-3.5 text-muted-foreground" />
             {(["All", "Low", "Moderate", "High"] as const).map((l) => (
               <button key={l} onClick={() => setRiskFilter(l)}
-                className={`px-2.5 py-1.5 text-[11px] rounded-md font-medium transition-colors ${riskFilter === l ? "bg-primary text-primary-foreground" : "bg-secondary/50 text-secondary-foreground hover:bg-secondary"}`}>
+                className={`px-2.5 py-1.5 text-[11px] rounded-md font-medium transition-all duration-200 active:scale-95 ${riskFilter === l ? "bg-primary text-primary-foreground" : "bg-secondary/50 text-secondary-foreground hover:bg-secondary"}`}>
                 {l}
               </button>
             ))}
@@ -72,7 +80,7 @@ export default function Markets() {
           <div className="flex items-center gap-1.5">
             {(["price", "volume", "risk", "name"] as const).map((k) => (
               <button key={k} onClick={() => setSortKey(k)}
-                className={`px-2.5 py-1.5 text-[11px] rounded-md font-medium transition-colors ${sortKey === k ? "bg-primary text-primary-foreground" : "bg-secondary/50 text-secondary-foreground hover:bg-secondary"}`}>
+                className={`px-2.5 py-1.5 text-[11px] rounded-md font-medium transition-all duration-200 active:scale-95 ${sortKey === k ? "bg-primary text-primary-foreground" : "bg-secondary/50 text-secondary-foreground hover:bg-secondary"}`}>
                 {k.charAt(0).toUpperCase() + k.slice(1)}
               </button>
             ))}
@@ -82,22 +90,21 @@ export default function Markets() {
 
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 opacity-0 animate-fade-up" style={{ animationDelay: "100ms" }}>
         {filtered.map((coin) => (
-          <MarketCard key={coin.id} coin={coin} onClick={() => navigate(`/coin/${coin.id}`)} />
+          <MarketCard key={coin.id} coin={coin} symbol={currency.symbol} onClick={() => navigate(`/coin/${coin.id}`)} />
         ))}
       </div>
     </div>
   );
 }
 
-function MarketCard({ coin, onClick }: { coin: CryptoAsset; onClick: () => void }) {
+function MarketCard({ coin, symbol, onClick }: { coin: CryptoAsset; symbol: string; onClick: () => void }) {
   const isUp = coin.priceChangePercentage24h >= 0;
   const sparkData = coin.sparklineIn7d.filter((_, i) => i % 6 === 0).map((price, i) => ({ i, price }));
-  const riskColor = coin.riskLevel === "Low" ? "text-risk-low" : coin.riskLevel === "Moderate" ? "text-risk-moderate" : "text-risk-high";
   const sentColor = coin.sentimentLabel === "Positive" ? "text-sentiment-positive" : coin.sentimentLabel === "Negative" ? "text-sentiment-negative" : "text-sentiment-neutral";
 
   return (
     <div onClick={onClick}
-      className="glass-card rounded-xl p-5 cursor-pointer transition-all duration-300 hover:translate-y-[-2px] active:scale-[0.98]">
+      className="glass-card rounded-xl p-5 cursor-pointer interactive-card">
       <div className="flex items-center gap-3 mb-4">
         <img src={coin.image} alt={coin.name} className="h-10 w-10 rounded-full" loading="lazy"
           onError={(e) => { (e.target as HTMLImageElement).style.display = "none"; }} />
@@ -120,7 +127,7 @@ function MarketCard({ coin, onClick }: { coin: CryptoAsset; onClick: () => void 
 
       <div className="flex items-end justify-between">
         <div>
-          <p className="text-lg font-bold font-mono tabular-nums">{formatPrice(coin.currentPrice)}</p>
+          <p className="text-lg font-bold font-mono tabular-nums">{symbol}{coin.currentPrice.toLocaleString(undefined, { minimumFractionDigits: coin.currentPrice > 1 ? 2 : 4, maximumFractionDigits: coin.currentPrice > 1 ? 2 : 6 })}</p>
           <p className={`text-xs font-mono tabular-nums ${isUp ? "text-sentiment-positive" : "text-sentiment-negative"}`}>
             {formatPercent(coin.priceChangePercentage24h)}
           </p>

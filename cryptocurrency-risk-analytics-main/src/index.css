@@ -1,14 +1,11 @@
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap');
 
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
-
-/* =========================
-   THEME VARIABLES
-========================= */
+@import "tailwindcss/base";
+@import "tailwindcss/components";
+@import "tailwindcss/utilities";
 
 @layer base {
+  /* Light mode (default) */
   :root, .light {
     --background: 220 20% 97%;
     --foreground: 224 20% 14%;
@@ -16,146 +13,332 @@
     --card: 0 0% 100%;
     --card-foreground: 224 20% 14%;
 
-    --border: 220 14% 88%;
-    --muted-foreground: 220 10% 46%;
+    --popover: 0 0% 100%;
+    --popover-foreground: 224 20% 14%;
 
     --primary: 162 72% 40%;
+    --primary-foreground: 0 0% 100%;
+
+    --secondary: 220 14% 92%;
+    --secondary-foreground: 224 16% 30%;
+
+    --muted: 220 14% 94%;
+    --muted-foreground: 220 10% 46%;
+
+    --accent: 162 72% 40%;
+    --accent-foreground: 0 0% 100%;
+
+    --destructive: 0 72% 51%;
+    --destructive-foreground: 0 0% 100%;
+
+    --border: 220 14% 88%;
+    --input: 220 14% 90%;
+    --ring: 162 72% 40%;
+
+    --radius: 0.75rem;
+
+    --risk-low: 162 72% 40%;
+    --risk-moderate: 38 92% 50%;
+    --risk-high: 0 72% 51%;
+    --sentiment-positive: 162 72% 40%;
+    --sentiment-neutral: 220 10% 52%;
+    --sentiment-negative: 0 72% 51%;
+    --chart-1: 162 72% 40%;
+    --chart-2: 199 89% 48%;
+    --chart-3: 38 92% 50%;
+    --chart-4: 0 72% 51%;
+    --chart-5: 262 52% 47%;
+
+    --sidebar-background: 220 16% 96%;
+    --sidebar-foreground: 220 10% 40%;
+    --sidebar-primary: 162 72% 40%;
+    --sidebar-primary-foreground: 0 0% 100%;
+    --sidebar-accent: 220 14% 92%;
+    --sidebar-accent-foreground: 224 16% 20%;
+    --sidebar-border: 220 14% 88%;
+    --sidebar-ring: 162 72% 40%;
+
     --glow-primary: 162 72% 40%;
     --glow-blue: 199 89% 48%;
 
-    /* Chart */
+    /* Chart/tooltip theming - LIGHT mode: dark grid lines */
     --chart-grid: 220 10% 78%;
-    --chart-tick: 220 10% 52%;
+    --chart-tick: 220 10% 40%;
+    --chart-grid-bold: 220 10% 68%;
+    --tooltip-bg: 0 0% 99%;
+    --tooltip-border: 220 14% 88%;
+    --tooltip-text: 224 20% 14%;
 
-    /* Tooltip */
-    --tooltip-bg: rgba(255,255,255,0.95);
-    --tooltip-border: rgba(0,0,0,0.08);
-    --tooltip-text: #111;
+    /* Select/dropdown */
+    --select-bg: 0 0% 100%;
+    --select-text: 224 20% 14%;
   }
 
+  /* Dark mode */
   .dark {
     --background: 228 18% 6%;
     --foreground: 220 20% 92%;
 
     --card: 228 16% 9%;
+    --card-foreground: 220 20% 92%;
 
-    --border: 228 14% 14%;
-    --muted-foreground: 220 10% 46%;
+    --popover: 228 16% 9%;
+    --popover-foreground: 220 20% 92%;
 
     --primary: 162 78% 46%;
+    --primary-foreground: 228 18% 6%;
+
+    --secondary: 228 14% 14%;
+    --secondary-foreground: 220 15% 78%;
+
+    --muted: 228 14% 12%;
+    --muted-foreground: 220 10% 46%;
+
+    --accent: 162 78% 46%;
+    --accent-foreground: 228 18% 6%;
+
+    --destructive: 0 72% 51%;
+    --destructive-foreground: 0 0% 100%;
+
+    --border: 228 14% 14%;
+    --input: 228 14% 16%;
+    --ring: 162 78% 46%;
+
+    --radius: 0.75rem;
+
+    --risk-low: 162 78% 46%;
+    --risk-moderate: 38 92% 50%;
+    --risk-high: 0 72% 51%;
+    --sentiment-positive: 162 78% 46%;
+    --sentiment-neutral: 220 10% 52%;
+    --sentiment-negative: 0 72% 51%;
+    --chart-1: 162 78% 46%;
+    --chart-2: 199 89% 48%;
+    --chart-3: 38 92% 50%;
+    --chart-4: 0 72% 51%;
+    --chart-5: 262 52% 47%;
+
+    --sidebar-background: 228 18% 5%;
+    --sidebar-foreground: 220 10% 56%;
+    --sidebar-primary: 162 78% 46%;
+    --sidebar-primary-foreground: 228 18% 6%;
+    --sidebar-accent: 228 14% 10%;
+    --sidebar-accent-foreground: 220 15% 90%;
+    --sidebar-border: 228 14% 12%;
+    --sidebar-ring: 162 78% 46%;
+
     --glow-primary: 162 78% 46%;
     --glow-blue: 199 89% 48%;
 
-    /* Chart */
+    /* Chart/tooltip theming - DARK mode: light grid lines */
     --chart-grid: 228 14% 22%;
-    --chart-tick: 220 10% 46%;
+    --chart-tick: 220 10% 58%;
+    --chart-grid-bold: 228 14% 30%;
+    --tooltip-bg: 228 18% 8%;
+    --tooltip-border: 228 14% 20%;
+    --tooltip-text: 220 20% 92%;
 
-    /* Tooltip */
-    --tooltip-bg: rgba(20,20,20,0.85);
-    --tooltip-border: rgba(255,255,255,0.08);
-    --tooltip-text: #eee;
+    --select-bg: 228 16% 12%;
+    --select-text: 220 20% 92%;
   }
 }
-
-/* =========================
-   BASE STYLES
-========================= */
 
 @layer base {
   * {
     border-color: hsl(var(--border));
-    transition: background-color 0.25s ease, color 0.25s ease;
   }
-
   body {
-    @apply bg-background text-foreground font-sans antialiased;
+    background-color: hsl(var(--background));
+    color: hsl(var(--foreground));
+    font-family: "Inter", sans-serif;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+  h1, h2, h3, h4, h5, h6 {
+    font-weight: 600;
+    letter-spacing: -0.025em;
+    text-wrap: balance;
+  }
+  p {
+    text-wrap: pretty;
+    overflow-wrap: break-word;
   }
 }
 
-/* =========================
-   GLASS UI
-========================= */
+/* ═══════════ THEME TRANSITION ═══════════ */
+html.theme-transition,
+html.theme-transition *,
+html.theme-transition *::before,
+html.theme-transition *::after {
+  transition: background-color 0.35s ease, color 0.2s ease, border-color 0.25s ease, box-shadow 0.25s ease !important;
+}
+
+/* ═══════════ ANIMATIONS ═══════════ */
+@keyframes fade-up {
+  from { opacity: 0; transform: translateY(12px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+@keyframes fade-in {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+@keyframes scale-in {
+  from { opacity: 0; transform: scale(0.95); }
+  to   { opacity: 1; transform: scale(1); }
+}
+@keyframes glow-pulse {
+  0%, 100% { box-shadow: 0 0 8px -2px hsl(var(--glow-primary) / 0.15); }
+  50%      { box-shadow: 0 0 16px -2px hsl(var(--glow-primary) / 0.3); }
+}
+@keyframes pulse-gentle {
+  0%, 100% { opacity: 1; }
+  50%      { opacity: 0.6; }
+}
+@keyframes shimmer {
+  0%   { background-position: -200px 0; }
+  100% { background-position: calc(200px + 100%) 0; }
+}
+@keyframes slide-up {
+  from { opacity: 0; transform: translateY(20px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
 
 @layer utilities {
-  .glass-card {
-    background: hsl(var(--card) / 0.85);
-    border: 1px solid hsl(var(--border) / 0.5);
+  .risk-low { color: hsl(var(--risk-low)); }
+  .risk-moderate { color: hsl(var(--risk-moderate)); }
+  .risk-high { color: hsl(var(--risk-high)); }
+  .bg-risk-low { background-color: hsl(var(--risk-low)); }
+  .bg-risk-moderate { background-color: hsl(var(--risk-moderate)); }
+  .bg-risk-high { background-color: hsl(var(--risk-high)); }
+  .tabular-nums { font-variant-numeric: tabular-nums; }
+
+  /* Glassmorphism - adapts to theme */
+  .glass {
+    background: hsl(var(--card) / 0.8);
     backdrop-filter: blur(12px);
-    border-radius: 12px;
-    transition: all 0.25s ease;
+    border: 1px solid hsl(var(--border) / 0.5);
   }
-
+  .glass-card {
+    background: hsl(var(--card) / 0.9);
+    border: 1px solid hsl(var(--border) / 0.6);
+    box-shadow: 0 2px 12px -4px hsl(var(--foreground) / 0.06);
+  }
   .glass-card:hover {
-    transform: scale(1.02);
-    box-shadow: 0 8px 30px -8px hsl(var(--foreground) / 0.15);
+    box-shadow: 0 4px 20px -4px hsl(var(--foreground) / 0.1);
   }
 
-  .glow {
-    box-shadow: 0 0 20px -6px hsl(var(--glow-primary) / 0.4);
+  /* Interactive card — scale + glow on hover, click feedback */
+  .interactive-card {
+    transition-property: all;
+    transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+    transition-duration: 300ms;
+    cursor: pointer;
+  }
+  .interactive-card:hover {
+    transform: translateY(-2px) scale(1.005);
+    box-shadow: 0 8px 30px -6px hsl(var(--glow-primary) / 0.12);
+  }
+  .interactive-card:active {
+    transform: scale(0.98);
+  }
+
+  /* Subtle glow */
+  .glow-sm {
+    box-shadow: 0 0 10px -4px hsl(var(--glow-primary) / 0.12);
+  }
+  .glow-md {
+    box-shadow: 0 0 20px -4px hsl(var(--glow-primary) / 0.15);
+  }
+  .glow-text {
+    text-shadow: 0 0 16px hsl(var(--glow-primary) / 0.3);
+  }
+
+  /* Gradient text */
+  .gradient-text {
+    background: linear-gradient(135deg, hsl(var(--primary)), hsl(var(--glow-blue)));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+
+  /* Fade-up animation class */
+  .animate-fade-up {
+    animation: fade-up 0.5s ease-out forwards;
+  }
+  .animate-fade-in {
+    animation: fade-in 0.3s ease-out forwards;
+  }
+  .animate-scale-in {
+    animation: scale-in 0.3s ease-out forwards;
+  }
+  .animate-glow-pulse {
+    animation: glow-pulse 2s ease-in-out infinite;
+  }
+  .animate-pulse-gentle {
+    animation: pulse-gentle 2s ease-in-out infinite;
+  }
+
+  /* Live pulse dot */
+  .live-dot {
+    position: relative;
+  }
+  .live-dot::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    border-radius: 9999px;
+    animation: glow-pulse 2s ease-in-out infinite;
   }
 }
 
-/* =========================
-   RECHARTS FIX (IMPORTANT)
-========================= */
-
-/* remove default ugly gray */
-.recharts-tooltip-wrapper {
-  outline: none !important;
-}
-
-/* custom tooltip */
+/* ═══════════ RECHARTS TOOLTIP OVERRIDE ═══════════ */
 .recharts-default-tooltip {
-  background: var(--tooltip-bg) !important;
-  border: 1px solid var(--tooltip-border) !important;
-  border-radius: 10px !important;
-  padding: 8px 12px !important;
-  backdrop-filter: blur(10px);
-  box-shadow: 0 8px 24px rgba(0,0,0,0.15);
-  transition: all 0.2s ease;
+  background: hsl(var(--tooltip-bg)) !important;
+  border: 1px solid hsl(var(--tooltip-border)) !important;
+  border-radius: 0.75rem !important;
+  box-shadow: 0 8px 32px -8px hsl(var(--foreground) / 0.12) !important;
+  backdrop-filter: blur(12px) !important;
+  padding: 10px 14px !important;
+  animation: fade-in 0.15s ease-out !important;
+}
+.recharts-default-tooltip .recharts-tooltip-label {
+  color: hsl(var(--tooltip-text)) !important;
+  font-weight: 600 !important;
+}
+.recharts-default-tooltip .recharts-tooltip-item {
+  color: hsl(var(--tooltip-text) / 0.8) !important;
+}
+/* Kill any gray recharts backgrounds and cursors */
+.recharts-wrapper,
+.recharts-surface {
+  background: transparent !important;
 }
 
-/* text */
-.recharts-tooltip-label {
-  color: var(--tooltip-text) !important;
-  font-weight: 500;
+.recharts-rectangle.recharts-tooltip-cursor {
+  display: none !important;
 }
 
-.recharts-tooltip-item {
-  color: var(--tooltip-text) !important;
-  opacity: 0.8;
+/* ═══════════ SELECT / DROPDOWN FIX ═══════════ */
+select, option {
+  background-color: hsl(var(--select-bg)) !important;
+  color: hsl(var(--select-text)) !important;
+}
+select:focus {
+  background-color: hsl(var(--select-bg)) !important;
 }
 
-/* remove gray hover overlay */
-.recharts-tooltip-cursor {
-  fill: transparent !important;
-}
-
-/* =========================
-   SCROLLBAR
-========================= */
-
+/* ═══════════ SCROLLBAR ═══════════ */
 ::-webkit-scrollbar {
   width: 6px;
+  height: 6px;
 }
-
+::-webkit-scrollbar-track {
+  background: hsl(var(--background));
+}
 ::-webkit-scrollbar-thumb {
   background: hsl(var(--border));
-  border-radius: 4px;
+  border-radius: 3px;
 }
-
-/* =========================
-   SMOOTH UI
-========================= */
-
-button {
-  transition: all 0.2s ease;
-}
-
-button:hover {
-  transform: scale(1.05);
-}
-
-button:active {
-  transform: scale(0.95);
+::-webkit-scrollbar-thumb:hover {
+  background: hsl(var(--muted-foreground) / 0.3);
 }

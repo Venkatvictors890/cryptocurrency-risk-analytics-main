@@ -1,9 +1,7 @@
 import { Sun, Moon } from "lucide-react";
 import { useTheme } from "@/hooks/useTheme";
-const prefersDark = window.matchMedia("(prefers-color-scheme: dark)").matches;
-const [theme, setTheme] = (prefersDark ? "dark" : "light");
+
 export function ThemeToggle() {
-  
   const { theme, toggle } = useTheme();
 
   return (

@@ -1,24 +1,17 @@
-import { useEffect, useState } from "react";
+import { useQuery } from "@tanstack/react-query";
+import { fetchTopCryptos } from "@/services/coingecko";
 
-export function useCryptoData(fetchFn) {
-  const [data, setData] = useState([]);
-
-  useEffect(() => {
-    let intervalId;
-
-    const fetchData = async () => {
-      const res = await fetchFn();
-      setData(res);
-    };
-
-    fetchData();
-
-    intervalId = setInterval(() => {
-      fetchData();
-    }, 5000);
-
-    return () => clearInterval(intervalId);
-  }, [fetchFn]);
-
-  return data;
+/**
+ * Hook to fetch and auto-refresh crypto data.
+ * Refreshes every 60 seconds to stay within CoinGecko free tier limits.
+ * Supports multiple fiat currencies.
+ */
+export function useCryptoData(count = 50, currency = "usd") {
+  return useQuery({
+    queryKey: ["cryptos", count, currency],
+    queryFn: () => fetchTopCryptos(count, currency),
+    refetchInterval: 60 * 1000, // 60 seconds
+    staleTime: 30 * 1000,
+    retry: 2,
+  });
 }

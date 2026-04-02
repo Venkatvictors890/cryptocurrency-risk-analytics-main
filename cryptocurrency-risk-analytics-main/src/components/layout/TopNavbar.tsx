@@ -4,35 +4,23 @@ import { SidebarTrigger } from "@/components/ui/sidebar";
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { ThemeToggle } from "@/components/ThemeToggle";
-import { ExitConfirmationDialog } from "@/components/ExitConfirmationDialog";
-import { Button } from "@/components/ui/button";
+import { useCurrency } from "@/hooks/useCurrencyStore";
+import { SUPPORTED_CURRENCIES } from "@/services/coingecko";
 
-export function TopNavbar() {
+interface TopNavbarProps {
+  onExitClick?: () => void;
+}
+
+export function TopNavbar({ onExitClick }: TopNavbarProps) {
   const [searchQuery, setSearchQuery] = useState("");
   const navigate = useNavigate();
-  
-  // Implementation states for Exit Dialog
-  const [isExitDialogOpen, setIsExitDialogOpen] = useState(false);
-  const [hasUnsavedChanges, setHasUnsavedChanges] = useState(true); // Defaulting to true to show the unsaved flow
+  const { currency, setCurrencyByCode } = useCurrency();
 
   const handleSearch = (e: React.FormEvent) => {
     e.preventDefault();
     if (searchQuery.trim()) {
       navigate(`/markets?q=${encodeURIComponent(searchQuery.trim())}`);
     }
-  };
-
-  const handleSaveData = async () => {
-    // Simulate a network save request
-    await new Promise(resolve => setTimeout(resolve, 1000));
-    setHasUnsavedChanges(false);
-    return true; 
-  };
-
-  const handleConfirmExit = () => {
-    setIsExitDialogOpen(false);
-    // Usually you would clear tokens, redirect to /login or a landing page
-    navigate("/");
   };
 
   return (
@@ -65,29 +53,33 @@ export function TopNavbar() {
 
       {/* Right controls */}
       <div className="ml-auto flex items-center gap-3">
+        {/* Currency selector */}
+        <select
+          value={currency.code}
+          onChange={(e) => setCurrencyByCode(e.target.value)}
+          className="h-8 rounded-lg bg-secondary/50 border border-border px-2 text-[11px] text-foreground focus:outline-none focus:ring-1 focus:ring-primary hidden sm:block"
+        >
+          {SUPPORTED_CURRENCIES.map(c => (
+            <option key={c.code} value={c.code}>{c.symbol} {c.code.toUpperCase()}</option>
+          ))}
+        </select>
+
         <ThemeToggle />
+
         <div className="flex items-center gap-2 px-3 py-1.5 rounded-full bg-primary/5 border border-primary/10">
           <Wifi className="h-3 w-3 text-primary animate-pulse-gentle" />
           <span className="text-[11px] font-medium text-primary/80">Live</span>
         </div>
-        <Button 
-          variant="ghost" 
-          size="icon" 
-          onClick={() => setIsExitDialogOpen(true)}
-          title="Exit Application"
-          className="text-muted-foreground hover:text-destructive transition-colors h-8 w-8"
-        >
-          <LogOut className="h-4 w-4" />
-        </Button>
 
-        {/* Exit Confirmation Dialog Instance */}
-        <ExitConfirmationDialog
-          isOpen={isExitDialogOpen}
-          hasUnsavedChanges={hasUnsavedChanges}
-          onOpenChange={setIsExitDialogOpen}
-          onSave={handleSaveData}
-          onConfirmClose={handleConfirmExit}
-        />
+        {onExitClick && (
+          <button
+            onClick={onExitClick}
+            className="h-8 w-8 rounded-lg bg-secondary/50 border border-border flex items-center justify-center hover:bg-destructive/10 hover:border-destructive/20 hover:text-destructive transition-all duration-200 active:scale-95"
+            title="Exit to Landing"
+          >
+            <LogOut className="h-3.5 w-3.5" />
+          </button>
+        )}
       </div>
     </header>
   );

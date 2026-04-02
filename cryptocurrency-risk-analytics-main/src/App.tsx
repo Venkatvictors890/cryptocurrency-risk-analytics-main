@@ -1,8 +1,9 @@
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { BrowserRouter, Route, Routes, Navigate } from "react-router-dom";
+import { BrowserRouter, Route, Routes } from "react-router-dom";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { Toaster } from "@/components/ui/toaster";
 import { TooltipProvider } from "@/components/ui/tooltip";
+import { CurrencyProvider } from "@/hooks/useCurrencyStore";
 import { AppLayout } from "@/components/layout/AppLayout";
 import { lazy, Suspense } from "react";
 
@@ -19,6 +20,7 @@ const Trade = lazy(() => import("./pages/Trade"));
 const AiAssistant = lazy(() => import("./pages/AiAssistant"));
 const SystemArchitecture = lazy(() => import("./pages/SystemArchitecture"));
 const Repository = lazy(() => import("./pages/Repository"));
+const SocialSentiment = lazy(() => import("./pages/SocialSentiment"));
 const NotFound = lazy(() => import("./pages/NotFound"));
 
 const queryClient = new QueryClient();
@@ -33,32 +35,35 @@ function PageLoader() {
 
 const App = () => (
   <QueryClientProvider client={queryClient}>
-    <TooltipProvider>
-      <Toaster />
-      <Sonner />
-      <BrowserRouter>
-        <Suspense fallback={<PageLoader />}>
-          <Routes>
-            <Route path="/" element={<Landing />} />
-            <Route element={<AppLayout />}>
-              <Route path="/dashboard" element={<Dashboard />} />
-              <Route path="/markets" element={<Markets />} />
-              <Route path="/coin/:id" element={<CoinDetail />} />
-              <Route path="/analytics" element={<Analytics />} />
-              <Route path="/news" element={<News />} />
-              <Route path="/archive" element={<ArchivePage />} />
-              <Route path="/compare" element={<Compare />} />
-              <Route path="/recommendations" element={<Recommendations />} />
-              <Route path="/trade" element={<Trade />} />
-              <Route path="/ai-assistant" element={<AiAssistant />} />
-              <Route path="/system-architecture" element={<SystemArchitecture />} />
-              <Route path="/repository" element={<Repository />} />
-            </Route>
-            <Route path="*" element={<NotFound />} />
-          </Routes>
-        </Suspense>
-      </BrowserRouter>
-    </TooltipProvider>
+    <CurrencyProvider>
+      <TooltipProvider>
+        <Toaster />
+        <Sonner />
+        <BrowserRouter>
+          <Suspense fallback={<PageLoader />}>
+            <Routes>
+              <Route path="/" element={<Landing />} />
+              <Route element={<AppLayout />}>
+                <Route path="/dashboard" element={<Dashboard />} />
+                <Route path="/markets" element={<Markets />} />
+                <Route path="/coin/:id" element={<CoinDetail />} />
+                <Route path="/analytics" element={<Analytics />} />
+                <Route path="/news" element={<News />} />
+                <Route path="/archive" element={<ArchivePage />} />
+                <Route path="/compare" element={<Compare />} />
+                <Route path="/recommendations" element={<Recommendations />} />
+                <Route path="/trade" element={<Trade />} />
+                <Route path="/ai-assistant" element={<AiAssistant />} />
+                <Route path="/system-architecture" element={<SystemArchitecture />} />
+                <Route path="/repository" element={<Repository />} />
+                <Route path="/social-sentiment" element={<SocialSentiment />} />
+              </Route>
+              <Route path="*" element={<NotFound />} />
+            </Routes>
+          </Suspense>
+        </BrowserRouter>
+      </TooltipProvider>
+    </CurrencyProvider>
   </QueryClientProvider>
 );
 
