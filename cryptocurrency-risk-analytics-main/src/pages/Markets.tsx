@@ -5,15 +5,9 @@ import { useCurrency } from "@/hooks/useCurrencyStore";
 import { formatPrice, formatPercent, formatCompact } from "@/lib/format";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Input } from "@/components/ui/input";
-import { Search, Filter, Info } from "lucide-react";
+import { Search, Filter } from "lucide-react";
 import { LineChart, Line, ResponsiveContainer } from "recharts";
 import type { CryptoAsset, RiskLevel } from "@/types/crypto";
-import {
-  Tooltip,
-  TooltipContent,
-  TooltipProvider,
-  TooltipTrigger,
-} from "@/components/ui/tooltip";
 
 export default function Markets() {
   const { currency } = useCurrency();
@@ -98,9 +92,14 @@ export default function Markets() {
 }
 
 function MarketCard({ coin, symbol, onClick }: { coin: CryptoAsset; symbol: string; onClick: () => void }) {
-  const isUp = coin.priceChangePercentage24h >= 0;
-  const sparkData = coin.sparklineIn7d.filter((_, i) => i % 6 === 0).map((price, i) => ({ i, price }));
+  const pctChange = coin.priceChangePercentage24h ?? 0;
+  const isUp = pctChange >= 0;
+  const sparkline = coin.sparklineIn7d ?? [];
+  const sparkData = sparkline.length > 0
+    ? sparkline.filter((_, i) => i % 6 === 0).map((price, i) => ({ i, price }))
+    : [];
   const sentColor = coin.sentimentLabel === "Positive" ? "text-sentiment-positive" : coin.sentimentLabel === "Negative" ? "text-sentiment-negative" : "text-sentiment-neutral";
+  const price = coin.currentPrice ?? 0;
 
   return (
     <div onClick={onClick}
@@ -117,19 +116,21 @@ function MarketCard({ coin, symbol, onClick }: { coin: CryptoAsset; symbol: stri
         </span>
       </div>
 
-      <div className="h-16 mb-4">
-        <ResponsiveContainer width="100%" height="100%">
-          <LineChart data={sparkData}>
-            <Line type="monotone" dataKey="price" stroke={isUp ? "hsl(162, 78%, 46%)" : "hsl(0, 72%, 51%)"} strokeWidth={1.5} dot={false} />
-          </LineChart>
-        </ResponsiveContainer>
-      </div>
+      {sparkData.length > 0 && (
+        <div className="h-16 mb-4">
+          <ResponsiveContainer width="100%" height="100%">
+            <LineChart data={sparkData}>
+              <Line type="monotone" dataKey="price" stroke={isUp ? "hsl(162, 78%, 46%)" : "hsl(0, 72%, 51%)"} strokeWidth={1.5} dot={false} />
+            </LineChart>
+          </ResponsiveContainer>
+        </div>
+      )}
 
       <div className="flex items-end justify-between">
         <div>
-          <p className="text-lg font-bold font-mono tabular-nums">{symbol}{coin.currentPrice.toLocaleString(undefined, { minimumFractionDigits: coin.currentPrice > 1 ? 2 : 4, maximumFractionDigits: coin.currentPrice > 1 ? 2 : 6 })}</p>
+          <p className="text-lg font-bold font-mono tabular-nums">{symbol}{price.toLocaleString(undefined, { minimumFractionDigits: price > 1 ? 2 : 4, maximumFractionDigits: price > 1 ? 2 : 6 })}</p>
           <p className={`text-xs font-mono tabular-nums ${isUp ? "text-sentiment-positive" : "text-sentiment-negative"}`}>
-            {formatPercent(coin.priceChangePercentage24h)}
+            {formatPercent(pctChange)}
           </p>
         </div>
         <div className="text-right">
