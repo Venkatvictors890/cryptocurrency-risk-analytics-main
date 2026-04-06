@@ -34,9 +34,10 @@ const PLATFORMS = [
     icon: "🐦", 
     color: "from-blue-400 to-blue-600",
     resources: [
-      { label: "🌐 Official", url: "https://twitter.com/TwitterCrypto" },
-      { label: "📝 Reviews", url: "https://twitter.com/search?q=crypto%20sentiment%20analysis" },
-      { label: "⚡ Live Feed", url: "https://twitter.com/hashtag/CryptoNews" }
+      { label: "🌐 CoinDesk", url: "https://x.com/CoinDesk" },
+      { label: "📝 Cointelegraph", url: "https://x.com/Cointelegraph" },
+      { label: "⚡ #Bitcoin", url: "https://x.com/search?q=%23Bitcoin&src=typed_query&f=live" },
+      { label: "📖 Wiki: Bitcoin", url: "https://en.wikipedia.org/wiki/Bitcoin" }
     ]
   },
   { 
@@ -44,9 +45,10 @@ const PLATFORMS = [
     icon: "🤖", 
     color: "from-orange-400 to-orange-600",
     resources: [
-      { label: "👥 Community", url: "https://reddit.com/r/CryptoCurrency" },
-      { label: "📝 Reviews", url: "https://www.reddit.com/r/CryptoCrrency/search?q=sentiment" },
-      { label: "📖 Guide", url: "https://reddit.com/r/BitcoinBeginners" }
+      { label: "👥 r/CryptoCurrency", url: "https://www.reddit.com/r/CryptoCurrency/" },
+      { label: "📝 r/Bitcoin", url: "https://www.reddit.com/r/Bitcoin/" },
+      { label: "📖 r/BitcoinBeginners", url: "https://www.reddit.com/r/BitcoinBeginners/" },
+      { label: "🔬 r/CryptoTechnology", url: "https://www.reddit.com/r/CryptoTechnology/" }
     ]
   },
   { 
@@ -54,9 +56,10 @@ const PLATFORMS = [
     icon: "📺", 
     color: "from-red-500 to-red-700",
     resources: [
-      { label: "🎥 Channel", url: "https://youtube.com/@CoinBureau" },
-      { label: "🎬 Shorts", url: "https://www.youtube.com/shorts/5X6_Y0L0-5k" },
-      { label: "💡 Analysis", url: "https://www.youtube.com/results?search_query=crypto+sentiment+analysis" }
+      { label: "🎥 Coin Bureau", url: "https://www.youtube.com/@CoinBureau" },
+      { label: "🎬 What is Bitcoin?", url: "https://www.youtube.com/watch?v=41JCpzvnn_0" },
+      { label: "💡 Whiteboard Crypto", url: "https://www.youtube.com/@WhiteboardCrypto" },
+      { label: "📊 Benjamin Cowen", url: "https://www.youtube.com/@IntoCryptoverse" }
     ]
   },
   { 
@@ -64,9 +67,9 @@ const PLATFORMS = [
     icon: "💬", 
     color: "from-indigo-400 to-indigo-600",
     resources: [
-      { label: "🌐 Official", url: "https://discord.com/invite/cryptohub" },
-      { label: "💬 Chat", url: "https://discord.com/invite/axie" },
-      { label: "🐋 Whale Alert", url: "https://discord.com/invite/whale-alert" }
+      { label: "🌐 Cryptohub", url: "https://discord.gg/cryptohub" },
+      { label: "💬 Axie Infinity", url: "https://discord.gg/axie" },
+      { label: "📖 Wiki: Cryptocurrency", url: "https://en.wikipedia.org/wiki/Cryptocurrency" }
     ]
   },
   { 
@@ -74,9 +77,9 @@ const PLATFORMS = [
     icon: "📸", 
     color: "from-pink-500 to-purple-600",
     resources: [
-      { label: "📸 Education", url: "https://instagram.com/cryptoexplorer" },
-      { label: "🎬 Reels", url: "https://www.instagram.com/reels/tags/cryptotrading/" },
-      { label: "🌐 Binance", url: "https://instagram.com/binance" }
+      { label: "📸 Binance", url: "https://www.instagram.com/binance/" },
+      { label: "🌐 CoinDesk", url: "https://www.instagram.com/coindesk/" },
+      { label: "📊 CoinGecko", url: "https://www.instagram.com/coingecko/" }
     ]
   },
   { 
@@ -84,35 +87,41 @@ const PLATFORMS = [
     icon: "👥", 
     color: "from-blue-600 to-blue-800",
     resources: [
-      { label: "📰 News Group", url: "https://www.facebook.com/groups/cryptocurrencynewsgroup/" },
-      { label: "📊 Trading", url: "https://www.facebook.com/groups/BitcoinTradingGroup/" }
+      { label: "📰 CoinDesk", url: "https://www.facebook.com/coindesk" },
+      { label: "📊 Cointelegraph", url: "https://www.facebook.com/cointelegraph" },
+      { label: "🌐 Binance", url: "https://www.facebook.com/binance" }
     ]
   },
   { 
-    name: "Snapchat", 
-    icon: "👻", 
-    color: "from-yellow-300 to-yellow-500",
+    name: "Wikipedia", 
+    icon: "📚", 
+    color: "from-gray-400 to-gray-600",
     resources: [
-      { label: "👻 Discover", url: "https://www.snapchat.com/discover/Crypto_News/0285160877" },
-      { label: "📈 Trends", url: "https://www.snapchat.com/discover/Bitcoin_Updates/0285160877" }
+      { label: "📖 Cryptocurrency", url: "https://en.wikipedia.org/wiki/Cryptocurrency" },
+      { label: "📖 Blockchain", url: "https://en.wikipedia.org/wiki/Blockchain" },
+      { label: "📖 Ethereum", url: "https://en.wikipedia.org/wiki/Ethereum" },
+      { label: "📖 DeFi", url: "https://en.wikipedia.org/wiki/Decentralized_finance" }
     ]
   },
   { 
     name: "Others", 
     icon: "🌐", 
-    color: "from-gray-500 to-gray-700",
+    color: "from-teal-500 to-teal-700",
     resources: [
-      { label: "📊 Kaggle Data", url: "https://www.kaggle.com/datasets/kaushiksuresh147/bitcoin-tweets" },
-      { label: "📲 Telegram", url: "https://t.me/cryptodaily" },
-      { label: "🎵 TikTok", url: "https://www.tiktok.com/tag/cryptocurrency" }
+      { label: "📊 CoinGecko", url: "https://www.coingecko.com/" },
+      { label: "📲 Telegram: CoinGecko", url: "https://t.me/coingecko" },
+      { label: "🎵 TikTok #Crypto", url: "https://www.tiktok.com/tag/cryptocurrency" },
+      { label: "📰 CoinDesk News", url: "https://www.coindesk.com/" }
     ]
   }
 ];
 
 const TUTORS = [
-  { name: "Coin Bureau", link: "https://youtube.com/@CoinBureau", type: "Deep Analysis" },
-  { name: "Whiteboard Crypto", link: "https://youtube.com/@WhiteboardCrypto", type: "Tech Explained" },
-  { name: "Benjamin Cowen", link: "https://youtube.com/@intothecryptoverse", type: "Math & Data" },
+  { name: "Coin Bureau", link: "https://www.youtube.com/@CoinBureau", type: "Deep Analysis" },
+  { name: "Whiteboard Crypto", link: "https://www.youtube.com/@WhiteboardCrypto", type: "Tech Explained" },
+  { name: "Benjamin Cowen", link: "https://www.youtube.com/@IntoCryptoverse", type: "Math & Data" },
+  { name: "Andreas Antonopoulos", link: "https://www.youtube.com/@aantonop", type: "Bitcoin Expert" },
+  { name: "CoinDesk", link: "https://www.youtube.com/@CoinDesk", type: "Industry News" },
 ];
 
 /** Custom Tooltip for Sentiment Chart with Definitions */
